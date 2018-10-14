@@ -18,7 +18,7 @@ class Consumer extends RabbitMain {
         parent::__construct($host, $port, $user, $password);
     }
 
-    public function listenQueue(): void {
+    public function initQueue($callback): void {
         echo " [*] Waiting for messages. To exit press CTRL+C\n";
 
         $this->channel->basic_consume(
@@ -28,13 +28,21 @@ class Consumer extends RabbitMain {
             true,
             false,
             false,
-            function ($msg) {
-                echo ' [x] Received ', $msg->body, "\n";
-            }
+            $callback
         );
+    }
 
-        while (count($this->channel->callbacks)) {
-            $this->channel->wait();
-        }
+    /**
+     * @return int
+     */
+    public function countCallbacks() {
+        return count($this->channel->callbacks);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function wait() {
+        return $this->channel->wait();
     }
 }
