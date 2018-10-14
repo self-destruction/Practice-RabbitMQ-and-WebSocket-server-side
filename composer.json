@@ -1,0 +1,17 @@
+{
+    "name": "intercross/Practice-RabbitMQ-and-WebSocket",
+    "require": {
+        "ext-sqlite3": "*",
+        "ext-mysqli": "*",
+        "php-amqplib/php-amqplib": "^2.7"
+    },
+    "authors": [
+        {
+            "name": "self-destruction",
+            "email": "syrchikov_max@mail.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"App\\": "src/"}
+    }
+}
