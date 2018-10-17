@@ -5,12 +5,15 @@ require_once __DIR__ . '/src/extracting_data.php';
 
 use App\RabbitMQ\Publisher;
 
-const QUEUE_NAME = 'rabbit_queue';
+$dotenv = new Dotenv\Dotenv(__DIR__ . '\config');
+$dotenv->load();
 
-$publisher = new Publisher('192.168.99.100', 32771, 'guest', 'guest');
-$publisher->initChannel(QUEUE_NAME);
+$publisher = new Publisher($_ENV['RABBITMQ_HOST'], $_ENV['RABBITMQ_PORT'], $_ENV['RABBITMQ_USER'], $_ENV['RABBITMQ_PASSWORD']);
+$publisher->initChannel($_ENV['RABBITMQ_QUEUE_NAME']);
 
-$message = Publisher::createMessage(serialize(extractData()));
+$data = extractData();
+$message = Publisher::createMessage(serialize($data));
+//var_dump($data);
 $publisher->send($message);
 
 $publisher->close();

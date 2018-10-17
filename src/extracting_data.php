@@ -2,7 +2,7 @@
 
 function extractData()
 {
-    $db_sqlite = new \SQLite3("sqlite_db/url_shortener", SQLITE3_OPEN_READWRITE);
+    $db_sqlite = new \SQLite3($_ENV['SQLITE_FILE'], SQLITE3_OPEN_READWRITE);
 
     $sql = 'SELECT * FROM main_table';
 
@@ -31,7 +31,4 @@ function extractData()
         'promocode' => $results['promocode'],
         'redeem' => $results['redeem']
     ];
-
-//var_dump($results);
-//var_dump(serialize($results));
 }

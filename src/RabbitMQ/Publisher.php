@@ -33,6 +33,6 @@ class Publisher extends RabbitMain {
     public function send(AMQPMessage $message): void {
         $this->channel->basic_publish($message, '', $this->queueName);
 
-        echo " [x] Sent $message->body\n";
+        echo " [x] Sent $message->body" . PHP_EOL;
     }
 }
