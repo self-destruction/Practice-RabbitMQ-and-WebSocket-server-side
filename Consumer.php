@@ -4,6 +4,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/src/persisting_data.php';
 
 use App\RabbitMQ\Consumer;
+use App\Formatter;
 use React\EventLoop\Factory;
 use React\Socket\Server;
 use React\Socket\ConnectionInterface;
@@ -24,8 +25,8 @@ do {
             $consumer->initChannel($_ENV['RABBITMQ_QUEUE_NAME']);
             $consumer->initQueue(function ($msg) {
                 echo " [x] Received $msg->body" . PHP_EOL;
-//                var_dump(unserialize($msg->body));
-                persistData(unserialize($msg->body));
+                $data = Formatter::revertConvertedData($msg->body);
+                persistData($data);
             });
             while($consumer->countCallbacks()) {
                 $consumer->wait();
@@ -38,11 +39,10 @@ do {
             $socket = new Server($_ENV['SERVER_URL'], $loop);
 
             $socket->on('connection', function (ConnectionInterface $conn) {
-
                 $conn->on('data', function ($data) use ($conn) {
                     echo " [x] Received $data" . PHP_EOL;
-//                    var_dump(unserialize($data));
-                    persistData(unserialize($data));
+                    $data = Formatter::revertConvertedData($data);
+                    persistData($data);
                     $conn->close();
                 });
             });

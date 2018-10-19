@@ -4,6 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/src/extracting_data.php';
 
 use App\RabbitMQ\Publisher;
+use App\Formatter;
 use React\EventLoop\Factory;
 use React\Socket\Connector;
 use React\Socket\ConnectionInterface;
@@ -11,7 +12,7 @@ use React\Socket\ConnectionInterface;
 $dotenv = new Dotenv\Dotenv(__DIR__ . '\config');
 $dotenv->load();
 
-$data = extractData();
+$data = Formatter::convertData(extractData());
 
 do {
     echo '1. Передача данных с помощью RabbitMQ.' . PHP_EOL;
@@ -25,8 +26,7 @@ do {
             $publisher = new Publisher($_ENV['RABBITMQ_HOST'], $_ENV['RABBITMQ_PORT'], $_ENV['RABBITMQ_USER'], $_ENV['RABBITMQ_PASSWORD']);
             $publisher->initChannel($_ENV['RABBITMQ_QUEUE_NAME']);
 
-            $message = Publisher::createMessage(serialize($data));
-//            var_dump($data);
+            $message = Publisher::createMessage($data);
             $publisher->send($message);
 
             $publisher->close();
@@ -38,10 +38,7 @@ do {
 
             $connector->connect($_ENV['SERVER_URL'])
                 ->then(function (ConnectionInterface $conn) use ($loop, $data) {
-//                    var_dump($data);
-                    $data = serialize($data);
                     echo " [x] Sent $data" . PHP_EOL;
-
                     $conn->write($data);
                 });
 
