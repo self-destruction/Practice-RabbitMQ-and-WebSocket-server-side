@@ -36,7 +36,7 @@ do {
             break;
         case '2':
             $loop = Factory::create();
-            $socket = new Server($_ENV['SERVER_URL'], $loop);
+            $socket = new Server($_ENV['SOCKET_HOST'] . ':' . $_ENV['SOCKET_PORT'], $loop);
 
             $socket->on('connection', function (ConnectionInterface $conn) {
                 $conn->on('data', function ($data) use ($conn) {
